@@ -1,0 +1,31 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- main
+
+pool:
+  name: local
+
+variables:
+  artifactName: 'drop'
+
+resources:
+  pipelines:
+  - pipeline: buildPipeline
+    source: ValconLibraryPractice2024
+    trigger: true
+
+steps:
+- download: current
+  artifact: $(artifactName)
+
+- task: AzureRmWebAppDeployment@4
+  inputs:
+    ConnectionType: 'AzureRM'
+    azureSubscription: 'Azure subscription 1(7adc82da-6341-4cbc-983b-d23a9d95acd1)'
+    appType: 'webApp'
+    WebAppName: 'librarypractice-dev'
+    packageForLinux: '$(Pipeline.Workspace)/$(artifactName)/**/*.zip'
